@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AR SIR's EAPCET 2026 — Master Resource Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+[data-theme="dark"]{
+--bg:#08080C;--bg2:#101014;--bg3:#16161C;--bgs:#0E0E12;--bgi:#1A1A22;
+--bp:rgba(212,175,55,.12);--bs:rgba(255,255,255,.04);--bh:rgba(212,175,55,.25);
+--t1:#F5F0E8;--t2:#A09882;--t3:#6B6355;--th:#F5F0E8;
+--g:#D4AF37;--gl:#E8CC6E;--gd:#B8941E;--gg:rgba(212,175,55,.08);--ggs:rgba(212,175,55,.15);
+--ma:#7CB9E8;--mb:rgba(124,185,232,.06);--ca:#77DD77;--cb2:rgba(119,221,119,.06);--pa:#FFB347;--pb:rgba(255,179,71,.06);
+--sc:0 4px 32px rgba(0,0,0,.5),0 0 1px rgba(212,175,55,.1);--sg2:0 0 40px rgba(212,175,55,.05);
+--glass:rgba(16,16,20,.65);--glass-border:rgba(212,175,55,.08);
+}
+[data-theme="light"]{
+--bg:#FAF8F5;--bg2:#FFFFFF;--bg3:#FEFDFB;--bgs:#F7F5F0;--bgi:#F0EDE6;
+--bp:rgba(163,130,30,.18);--bs:rgba(0,0,0,.06);--bh:rgba(163,130,30,.35);
+--t1:#1A1814;--t2:#6B6355;--t3:#9A9080;--th:#1A1814;
+--g:#A3821E;--gl:#C9A832;--gd:#8A6E12;--gg:rgba(163,130,30,.06);--ggs:rgba(163,130,30,.12);
+--ma:#2563EB;--mb:rgba(37,99,235,.05);--ca:#16A34A;--cb2:rgba(22,163,74,.05);--pa:#D97706;--pb:rgba(217,119,6,.05);
+--sc:0 2px 16px rgba(0,0,0,.06),0 0 1px rgba(0,0,0,.08);--sg2:none;
+--glass:rgba(255,255,255,.7);--glass-border:rgba(163,130,30,.12);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;line-height:1.6;overflow-x:hidden;transition:background .4s,color .4s}
+
+/* PARTICLES */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;width:2px;height:2px;background:var(--g);border-radius:50%;opacity:0;animation:float-up linear infinite}
+@keyframes float-up{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:.6}90%{opacity:.3}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
+
+/* AMBIENT */
+[data-theme="dark"] body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 500px 350px at 20% 5%,rgba(212,175,55,.04) 0%,transparent 70%),radial-gradient(ellipse 400px 300px at 80% 30%,rgba(212,175,55,.03) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+.pw{position:relative;z-index:1;max-width:1260px;margin:0 auto;padding:48px 28px 80px}
+
+/* COUNTDOWN BAR */
+.countdown-bar{display:flex;align-items:center;justify-content:center;gap:28px;padding:14px 24px;margin-bottom:32px;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:14px;animation:ru .6s cubic-bezier(.22,1,.36,1) both;flex-wrap:wrap}
+.cd-item{text-align:center}
+.cd-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--g);line-height:1}
+.cd-label{font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-top:2px}
+.cd-sep{color:var(--g);opacity:.25;font-size:24px;font-weight:300}
+.clock-area{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t3);letter-spacing:.5px}
+.clock-area i{color:var(--g);opacity:.5}
+
+/* MASTHEAD */
+.mh{text-align:center;margin-bottom:36px;animation:ru .8s cubic-bezier(.22,1,.36,1) .1s both}
+.mh-eye{display:inline-flex;align-items:center;gap:10px;padding:6px 20px;border:1px solid var(--bp);border-radius:100px;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--g);margin-bottom:24px;background:var(--gg)}
+.mh-eye .ld{width:6px;height:6px;border-radius:50%;background:var(--g);animation:pulse 2s infinite;box-shadow:0 0 6px rgba(212,175,55,.4)}
+.mh h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(30px,5vw,52px);font-weight:600;color:var(--th);letter-spacing:-.5px;line-height:1.1}
+.mh h1 .gl{color:var(--g)}
+.mh-r{width:80px;height:1px;margin:18px auto 14px;background:linear-gradient(90deg,transparent,var(--g),transparent)}
+.mh p{font-size:13px;color:var(--t3);letter-spacing:1px;text-transform:uppercase}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;animation:ru .8s cubic-bezier(.22,1,.36,1) .15s both}
+.stat-card{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:14px;padding:20px;text-align:center;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--sg2)}
+.stat-ring{width:68px;height:68px;margin:0 auto 10px;position:relative}
+.stat-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.stat-ring circle{fill:none;stroke-width:4;stroke-linecap:round}
+.stat-ring .bg-ring{stroke:var(--bs)}
+.stat-ring .fg-ring{stroke:var(--g);transition:stroke-dashoffset .8s ease}
+.stat-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--g)}
+.stat-card h3{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.stat-card p{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:.5px}
+.stat-card.s-math .fg-ring{stroke:var(--ma)}.stat-card.s-math .stat-pct{color:var(--ma)}
+.stat-card.s-chem .fg-ring{stroke:var(--ca)}.stat-card.s-chem .stat-pct{color:var(--ca)}
+.stat-card.s-phys .fg-ring{stroke:var(--pa)}.stat-card.s-phys .stat-pct{color:var(--pa)}
+
+/* TOOLBAR */
+.tb{display:flex;align-items:center;gap:10px;margin-bottom:28px;animation:ru .8s cubic-bezier(.22,1,.36,1) .2s both;flex-wrap:wrap}
+.sb{flex:1;position:relative;min-width:200px}.sb i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:13px;transition:color .3s}
+.sb input{width:100%;padding:11px 14px 11px 40px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--bs);border-radius:10px;color:var(--t1);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border-color .3s,box-shadow .3s}
+.sb input::placeholder{color:var(--t3);font-weight:300}.sb input:focus{border-color:var(--g);box-shadow:0 0 0 3px var(--gg)}
+.tb-btn{height:42px;border-radius:10px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--bs);color:var(--t2);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:6px;flex-shrink:0}
+.tb-btn:hover{border-color:var(--bh);color:var(--g)}
+.tb-icon{width:42px;padding:0}
+.tb-text{padding:0 16px;white-space:nowrap}
+.tb-btn.music-playing{color:var(--g);border-color:var(--g);background:var(--ggs)}
+
+/* SUBJECT NAV PILLS */
+.nav-pills{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:10px}
+.nav-pill{width:40px;height:40px;border-radius:10px;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:all .3s;text-decoration:none}
+.nav-pill:hover{border-color:var(--g);transform:scale(1.1);box-shadow:0 0 16px rgba(212,175,55,.15)}
+
+/* KBD HINT */
+.kbd{display:inline-block;padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:9px;background:var(--bs);color:var(--t3);border:1px solid var(--bs);margin-left:4px;vertical-align:middle}
+
+/* CARDS - GLASSMORPHISM */
+.sc{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:16px;box-shadow:var(--sc);overflow:hidden;margin-bottom:28px;transition:all .4s;scroll-margin-top:80px}
+.sc:hover{box-shadow:var(--sc),var(--sg2)}
+.ch{padding:18px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bs);cursor:pointer;user-select:none;transition:background .2s}
+.ch:hover{background:var(--gg)}
+.chl{display:flex;align-items:center;gap:14px}
+.sg{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;border:1px solid var(--bp);background:var(--gg);flex-shrink:0}
+.ch h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:21px;font-weight:600;color:var(--th)}
+.ht{display:inline-block;margin-left:10px;padding:2px 9px;border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:500;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--bp);color:var(--g);background:var(--gg);vertical-align:middle}
+.chr{display:flex;align-items:center;gap:12px}
+.cc{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3)}
+.cv{color:var(--g);font-size:13px;transition:transform .35s cubic-bezier(.22,1,.36,1)}
+.ch.collapsed .cv{transform:rotate(-90deg)}
+
+/* PROGRESS BAR under card header */
+.card-progress{height:2px;background:var(--bs);position:relative;overflow:hidden}
+.card-progress-fill{height:100%;background:linear-gradient(90deg,var(--g),var(--gl));width:0%;transition:width .6s ease;border-radius:2px}
+
+.cb{max-height:8000px;overflow:hidden;transition:max-height .5s cubic-bezier(.22,1,.36,1),opacity .3s;opacity:1}
+.cb.collapsed{max-height:0;opacity:0}
+
+/* SECTION */
+.sr td{background:var(--bgs)!important;padding:10px 20px!important;font-style:normal!important;border-bottom:1px solid var(--bs)!important;cursor:pointer;user-select:none;transition:background .2s}
+.sr:hover td{background:var(--gg)!important}
+.sl{display:inline-flex;align-items:center;gap:9px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--g)}
+.sl i{font-size:10px;opacity:.7}
+.st{padding:2px 9px;border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:500;color:var(--g);background:var(--gg);border:1px solid var(--bp)}
+.scv{color:var(--g);font-size:9px;transition:transform .3s;opacity:.5}
+.sr.scc .scv{transform:rotate(-90deg)}
+.sh{display:none}
+
+/* SECTION PROGRESS */
+.sec-prog{float:right;display:flex;align-items:center;gap:6px}
+.sec-prog-bar{width:60px;height:3px;background:var(--bs);border-radius:3px;overflow:hidden}
+.sec-prog-fill{height:100%;background:var(--g);width:0%;transition:width .4s;border-radius:3px}
+.sec-prog-txt{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3)}
+
+/* TABLE */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(212,175,55,.15) transparent}
+.tw::-webkit-scrollbar{height:5px}.tw::-webkit-scrollbar-thumb{background:rgba(212,175,55,.15);border-radius:10px}
+table{width:100%;border-collapse:collapse;min-width:900px}
+thead th{position:sticky;top:0;z-index:10;background:var(--bg3);padding:10px 14px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);text-align:left;white-space:nowrap;border-bottom:1px solid var(--bs);transition:background .4s}
+thead th .ti{display:flex;align-items:center;gap:6px}
+thead th .tc{color:var(--g);font-size:10px;opacity:.5}
+tbody tr{transition:background .15s,opacity .3s,transform .3s}
+tbody tr:hover{background:var(--gg)}
+tbody td{padding:10px 14px;font-size:12px;color:var(--t3);font-style:italic;border-bottom:1px solid var(--bs);white-space:nowrap;transition:all .4s}
+tbody td:first-child{font-weight:500;color:var(--t2);min-width:200px;white-space:normal}
+
+/* SCROLL REVEAL */
+.reveal-row{opacity:0;transform:translateY(12px)}
+.reveal-row.visible{opacity:1;transform:translateY(0)}
+
+/* CHECKBOX */
+.chk{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--bp);background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;margin-right:10px;transition:all .2s;flex-shrink:0;vertical-align:middle}
+.chk:hover{border-color:var(--g)}
+.chk.checked{background:var(--g);border-color:var(--g)}
+.chk.checked::after{content:'✓';color:#08080C;font-size:10px;font-weight:700}
+.done-row td{opacity:.45}
+.done-row .cn{text-decoration:line-through}
+
+.ci{display:flex;align-items:center}
+.rn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;font-style:normal;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;margin-right:10px;flex-shrink:0;color:var(--g);background:var(--gg);border:1px solid var(--bp)}
+.cn{font-style:normal;color:var(--t1);font-weight:500;font-size:12.5px;transition:color .4s}
+.wt{display:inline-block;padding:1px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:500;margin-left:8px;font-style:normal;white-space:nowrap;vertical-align:middle;color:var(--g);background:var(--gg);border:1px solid var(--bp)}
+.hi-wt .wt::before{content:'🔥 ';font-size:8px}
+.ph{font-style:italic;color:var(--t3);opacity:.5;font-size:11px}
+
+.mc .rn{color:var(--ma);background:var(--mb);border-color:rgba(124,185,232,.15)}.mc .wt{color:var(--ma);background:var(--mb);border-color:rgba(124,185,232,.12)}
+.cc2 .rn{color:var(--ca);background:var(--cb2);border-color:rgba(119,221,119,.15)}.cc2 .wt{color:var(--ca);background:var(--cb2);border-color:rgba(119,221,119,.12)}
+.pc .rn{color:var(--pa);background:var(--pb);border-color:rgba(255,179,71,.15)}.pc .wt{color:var(--pa);background:var(--pb);border-color:rgba(255,179,71,.12)}
+
+.cf{padding:12px 24px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--bs);background:var(--bgs);transition:all .4s}
+.cf span{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:.5px}
+.gd{display:flex;gap:3px}.gd span{width:4px;height:4px;border-radius:50%;background:var(--g);opacity:.25}
+
+.sm .cn{color:var(--g)!important;font-weight:600}.snm{display:none}
+.nr{text-align:center;padding:40px 20px;color:var(--t3);font-size:14px;display:none}
+.nr i{font-size:28px;color:var(--g);opacity:.3;display:block;margin-bottom:12px}
+
+.pf{text-align:center;margin-top:24px;padding:28px;opacity:.4}
+.pf span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:2px;text-transform:uppercase}
+.pf .fr{width:40px;height:1px;background:var(--g);margin:0 auto 12px;opacity:.3}
+
+@keyframes ru{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 6px rgba(212,175,55,.4)}50%{opacity:.4;box-shadow:0 0 2px rgba(212,175,55,.2)}}
+
+@media(max-width:768px){.pw{padding:24px 14px 60px}.ch{padding:14px 16px}.ch h2{font-size:17px}.ht{display:none}thead th,tbody td{padding:8px 10px;font-size:11px}.cf{padding:10px 16px}.tb{flex-wrap:wrap}.stats-row{grid-template-columns:1fr}.nav-pills{display:none}.countdown-bar{gap:16px}.cd-num{font-size:22px}}
+@media(max-width:480px){.mh h1{font-size:26px}.sg{width:34px;height:34px;font-size:16px}.ch h2{font-size:15px}.cc{display:none}.stats-row{gap:10px}}
+@media print{body{background:#fff!important;color:#111!important}body::before,#particles,.tb,.nav-pills,.countdown-bar,.stats-row{display:none!important}.sc{break-inside:avoid;box-shadow:none;border:1px solid #ddd;backdrop-filter:none;background:#fff}.cb.collapsed{max-height:none;opacity:1}.sh{display:table-row}.chk{border:1px solid #999}.done-row td{opacity:.5}}
+</style>
+</head>
+<body>
+<div id="particles"></div>
+<audio id="bgm" loop preload="auto"><source src="bgm.mp3" type="audio/mpeg"></audio>
+
+<div class="pw">
+
+<!-- COUNTDOWN -->
+<div class="countdown-bar">
+<div class="clock-area"><i class="fa-regular fa-clock"></i><span id="liveClock">--:--:--</span></div>
+<div class="cd-sep">|</div>
+<div class="cd-item"><div class="cd-num" id="cdD">--</div><div class="cd-label">Days</div></div>
+<div class="cd-item"><div class="cd-num" id="cdH">--</div><div class="cd-label">Hours</div></div>
+<div class="cd-item"><div class="cd-num" id="cdM">--</div><div class="cd-label">Minutes</div></div>
+<div class="cd-item"><div class="cd-num" id="cdS">--</div><div class="cd-label">Seconds</div></div>
+<div class="cd-sep">|</div>
+<div class="cd-label" style="color:var(--g);font-size:10px;letter-spacing:1px">UNTIL EAPCET 2026</div>
+</div>
+
+<!-- MASTHEAD -->
+<header class="mh">
+<div class="mh-eye"><span class="ld"></span>EAPCET 2026 · Resource Dashboard</div>
+<h1>AR SIR's <span class="gl">Master Tracker</span></h1>
+<div class="mh-r"></div>
+<p>Precision · Clarity · Excellence</p>
+</header>
+
+<!-- STATS -->
+<div class="stats-row">
+<div class="stat-card s-math"><div class="stat-ring"><svg viewBox="0 0 36 36"><circle class="bg-ring" cx="18" cy="18" r="15.9"/><circle class="fg-ring" id="ring-math" cx="18" cy="18" r="15.9" stroke-dasharray="100" stroke-dashoffset="100"/></svg><div class="stat-pct" id="pct-math">0%</div></div><h3>Mathematics</h3><p><span id="done-math">0</span>/33 Done · ~80 Marks</p></div>
+<div class="stat-card s-chem"><div class="stat-ring"><svg viewBox="0 0 36 36"><circle class="bg-ring" cx="18" cy="18" r="15.9"/><circle class="fg-ring" id="ring-chem" cx="18" cy="18" r="15.9" stroke-dasharray="100" stroke-dashoffset="100"/></svg><div class="stat-pct" id="pct-chem">0%</div></div><h3>Chemistry</h3><p><span id="done-chem">0</span>/25 Done · ~40 Marks</p></div>
+<div class="stat-card s-phys"><div class="stat-ring"><svg viewBox="0 0 36 36"><circle class="bg-ring" cx="18" cy="18" r="15.9"/><circle class="fg-ring" id="ring-phys" cx="18" cy="18" r="15.9" stroke-dasharray="100" stroke-dashoffset="100"/></svg><div class="stat-pct" id="pct-phys">0%</div></div><h3>Physics</h3><p><span id="done-phys">0</span>/28 Done · ~40 Marks</p></div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="tb">
+<div class="sb"><input type="text" id="si" placeholder="Search chapters... (Ctrl+K)" oninput="fc(this.value)"><i class="fa-solid fa-magnifying-glass"></i></div>
+<button class="tb-btn tb-icon" onclick="toggleMusic()" title="Play/Pause Music" id="musicBtn"><i class="fa-solid fa-music" id="musicIcon"></i></button>
+<button class="tb-btn tb-icon" onclick="tt()" title="Toggle Theme"><i class="fa-solid fa-sun" id="ti"></i></button>
+<button class="tb-btn tb-text" onclick="ta()" id="eb"><i class="fa-solid fa-compress"></i> Collapse</button>
+<button class="tb-btn tb-text" onclick="window.print()" title="Print"><i class="fa-solid fa-print"></i> Print</button>
+</div>
+
+<div id="nr" class="nr"><i class="fa-solid fa-search"></i>No chapters found.</div>
+
+<!-- NAV PILLS -->
+<nav class="nav-pills">
+<a class="nav-pill" href="#card-math" title="Mathematics">📐</a>
+<a class="nav-pill" href="#card-chem" title="Chemistry">🧪</a>
+<a class="nav-pill" href="#card-phys" title="Physics">⚛️</a>
+<a class="nav-pill" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false" title="Top">↑</a>
+</nav>
+
+<!-- MATHEMATICS -->
+<article class="sc mc" id="card-math" data-subject="math" data-total="33">
+<div class="ch" onclick="tc(this)"><div class="chl"><div class="sg">📐</div><h2>Mathematics <span class="ht">AR SIR · EAPCET 2026</span></h2></div><div class="chr"><span class="cc">33 Chapters</span><i class="fa-solid fa-chevron-down cv"></i></div></div>
+<div class="card-progress"><div class="card-progress-fill" id="prog-math"></div></div>
+<div class="cb"><div class="tw"><table>
+<thead><tr><th><span class="ti"><span class="tc"><i class="fa-solid fa-book-open"></i></span>Module / Chapter</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-chart-column"></i></span>PYQ Analysis</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-link"></i></span>Test Links</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-file-pdf"></i></span>Modules PDF</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-circle-check"></i></span>Solutions</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-pen-ruler"></i></span>ATS</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-bolt-lightning"></i></span>Shortcuts</span></th></tr></thead>
+<tbody>
+<tr class="sr" onclick="ts(this)" data-section="ma"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-layer-group"></i> Algebra <span class="st">25–30 Marks</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="ma"></span></span><span class="sec-prog-txt" data-sectxt="ma">0%</span></span></td></tr>
+<tr data-sec="ma" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">01</span><span class="cn">Matrices &amp; Determinants</span><span class="wt">3–4 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ma" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">02</span><span class="cn">Quadratic Expressions</span><span class="wt">2–3 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ma" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">03</span><span class="cn">Theory of Equations</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ma" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">04</span><span class="cn">Complex Numbers &amp; De-Moivre's Theorem</span><span class="wt">3–4 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ma" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">05</span><span class="cn">Permutations &amp; Combinations</span><span class="wt">3 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ma" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">06</span><span class="cn">Probability &amp; Random Variables</span><span class="wt">5 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ma" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">07</span><span class="cn">Binomial Theorem</span><span class="wt">2–3 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ma" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">08</span><span class="cn">Functions</span><span class="wt">2–3 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ma" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">09</span><span class="cn">Mathematical Induction</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ma" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">10</span><span class="cn">Partial Fractions</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ma" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">11</span><span class="cn">Statistics</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr class="sr" onclick="ts(this)" data-section="mc2"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-wave-square"></i> Calculus <span class="st">19–21 Marks</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="mc2"></span></span><span class="sec-prog-txt" data-sectxt="mc2">0%</span></span></td></tr>
+<tr data-sec="mc2" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">12</span><span class="cn">Limits and Continuity</span><span class="wt">2–3 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mc2" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">13</span><span class="cn">Differentiation</span><span class="wt">3–4 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mc2" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">14</span><span class="cn">Application of Differentiation</span><span class="wt">4 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mc2" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">15</span><span class="cn">Maxima and Minima</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mc2" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">16</span><span class="cn">Indefinite Integration</span><span class="wt">4 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mc2" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">17</span><span class="cn">Definite Integration &amp; Areas</span><span class="wt">3 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mc2" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">18</span><span class="cn">Differential Equations</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr class="sr" onclick="ts(this)" data-section="mg"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-crosshairs"></i> Co-ordinate Geometry <span class="st">17 Marks</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="mg"></span></span><span class="sec-prog-txt" data-sectxt="mg">0%</span></span></td></tr>
+<tr data-sec="mg" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">19</span><span class="cn">Rectangular &amp; Cartesian Coordinates</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mg" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">20</span><span class="cn">Straight Lines</span><span class="wt">3 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mg" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">21</span><span class="cn">Pair of Straight Lines</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mg" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">22</span><span class="cn">Circles</span><span class="wt">4 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mg" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">23</span><span class="cn">System of Circles</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mg" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">24</span><span class="cn">Parabola</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mg" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">25</span><span class="cn">Ellipse</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mg" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">26</span><span class="cn">Hyperbola</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr class="sr" onclick="ts(this)" data-section="mt"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-ruler-combined"></i> Trigonometry <span class="st">8 Marks</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="mt"></span></span><span class="sec-prog-txt" data-sectxt="mt">0%</span></span></td></tr>
+<tr data-sec="mt" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">27</span><span class="cn">Trigonometric Functions &amp; Identities</span><span class="wt">3 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mt" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">28</span><span class="cn">Trigonometric Equations</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mt" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">29</span><span class="cn">Inverse Trigonometry</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mt" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">30</span><span class="cn">Hyperbolic Functions</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mt" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">31</span><span class="cn">Properties of Triangles</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr class="sr" onclick="ts(this)" data-section="mv"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-arrows-up-down-left-right"></i> Vectors &amp; 3D <span class="st">8 Marks</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="mv"></span></span><span class="sec-prog-txt" data-sectxt="mv">0%</span></span></td></tr>
+<tr data-sec="mv" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">32</span><span class="cn">Vectors</span><span class="wt">5 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="mv" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">33</span><span class="cn">3-D Geometry</span><span class="wt">3 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+</tbody></table></div>
+<div class="cf"><span>33 chapters · 5 sections · ~80 marks</span><div class="gd"><span></span><span></span><span></span><span></span><span></span></div></div>
+</div></article>
+<!-- CHEMISTRY -->
+<article class="sc cc2" id="card-chem" data-subject="chem" data-total="25">
+<div class="ch" onclick="tc(this)"><div class="chl"><div class="sg">🧪</div><h2>Chemistry <span class="ht">AR SIR · EAPCET 2026</span></h2></div><div class="chr"><span class="cc">25 Chapters</span><i class="fa-solid fa-chevron-down cv"></i></div></div>
+<div class="card-progress"><div class="card-progress-fill" id="prog-chem"></div></div>
+<div class="cb"><div class="tw"><table>
+<thead><tr><th><span class="ti"><span class="tc"><i class="fa-solid fa-book-open"></i></span>Module / Chapter</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-chart-column"></i></span>PYQ Analysis</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-link"></i></span>Test Links</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-file-pdf"></i></span>Modules PDF</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-circle-check"></i></span>Solutions</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-pen-ruler"></i></span>ATS</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-bolt-lightning"></i></span>Shortcuts</span></th></tr></thead>
+<tbody>
+<tr class="sr" onclick="ts(this)" data-section="ci"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-flask"></i> Inorganic Chemistry <span class="st">16–18 Marks</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="ci"></span></span><span class="sec-prog-txt" data-sectxt="ci">0%</span></span></td></tr>
+<tr data-sec="ci" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">01</span><span class="cn">Atomic Structure</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ci" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">02</span><span class="cn">Classification of Elements &amp; Periodic Properties</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ci" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">03</span><span class="cn">Chemical Bonding &amp; Molecular Structure</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ci" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">04</span><span class="cn">Hydrogen &amp; Its Compounds</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ci" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">05</span><span class="cn">S and P Block Elements</span><span class="wt">6 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ci" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">06</span><span class="cn">D and F Block Elements</span><span class="wt">1–2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ci" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">07</span><span class="cn">Metallurgy</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ci" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">08</span><span class="cn">Co-ordination Compounds</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr class="sr" onclick="ts(this)" data-section="co"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-atom"></i> Organic Chemistry <span class="st">14 Marks</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="co"></span></span><span class="sec-prog-txt" data-sectxt="co">0%</span></span></td></tr>
+<tr data-sec="co" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">09</span><span class="cn">G.O.C and Hydrocarbons</span><span class="wt">4–5 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="co" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">10</span><span class="cn">Haloalkanes &amp; Haloarenes</span><span class="wt">1–2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="co" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">11</span><span class="cn">Alcohols, Phenols &amp; Ethers</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="co" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">12</span><span class="cn">Organic Compounds Containing Nitrogen</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="co" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">13</span><span class="cn">Polymers</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="co" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">14</span><span class="cn">Environmental Chemistry</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="co" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">15</span><span class="cn">Aldehydes, Ketones &amp; Carboxylic Acids</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="co" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">16</span><span class="cn">Biomolecules &amp; Chemistry in Everyday Life</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr class="sr" onclick="ts(this)" data-section="cp"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-fire-flame-curved"></i> Physical Chemistry <span class="st">10–14 Marks</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="cp"></span></span><span class="sec-prog-txt" data-sectxt="cp">0%</span></span></td></tr>
+<tr data-sec="cp" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">17</span><span class="cn">Some Basic Concepts &amp; Stoichiometry</span><span class="wt">1–2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="cp" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">18</span><span class="cn">Gaseous and Liquid States</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="cp" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">19</span><span class="cn">Thermodynamics</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="cp" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">20</span><span class="cn">Equilibrium</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="cp" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">21</span><span class="cn">Surface Chemistry</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="cp" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">22</span><span class="cn">Solid State</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="cp" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">23</span><span class="cn">Solutions</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="cp" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">24</span><span class="cn">Electro Chemistry</span><span class="wt">1–2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="cp" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">25</span><span class="cn">Chemical Kinetics</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+</tbody></table></div>
+<div class="cf"><span>25 chapters · 3 sections · ~40 marks</span><div class="gd"><span></span><span></span><span></span></div></div>
+</div></article>
+
+<!-- PHYSICS -->
+<article class="sc pc" id="card-phys" data-subject="phys" data-total="28">
+<div class="ch" onclick="tc(this)"><div class="chl"><div class="sg">⚛️</div><h2>Physics <span class="ht">AR SIR · EAPCET 2026</span></h2></div><div class="chr"><span class="cc">28 Chapters</span><i class="fa-solid fa-chevron-down cv"></i></div></div>
+<div class="card-progress"><div class="card-progress-fill" id="prog-phys"></div></div>
+<div class="cb"><div class="tw"><table>
+<thead><tr><th><span class="ti"><span class="tc"><i class="fa-solid fa-book-open"></i></span>Module / Chapter</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-chart-column"></i></span>PYQ Analysis</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-link"></i></span>Test Links</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-file-pdf"></i></span>Modules PDF</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-circle-check"></i></span>Solutions</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-pen-ruler"></i></span>ATS</span></th><th><span class="ti"><span class="tc"><i class="fa-solid fa-bolt-lightning"></i></span>Shortcuts</span></th></tr></thead>
+<tbody>
+<tr class="sr" onclick="ts(this)" data-section="pm"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-gears"></i> Mechanics <span class="st">14–15 Marks</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="pm"></span></span><span class="sec-prog-txt" data-sectxt="pm">0%</span></span></td></tr>
+<tr data-sec="pm" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">01</span><span class="cn">Physical World, Units &amp; Measurements</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pm" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">02</span><span class="cn">Laws of Motion</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pm" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">03</span><span class="cn">Work, Energy and Power</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pm" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">04</span><span class="cn">Gravitation</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pm" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">05</span><span class="cn">Kinematics</span><span class="wt">2–3 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pm" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">06</span><span class="cn">Rotational Motion</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pm" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">07</span><span class="cn">Mechanical Properties of Solids</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pm" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">08</span><span class="cn">Mechanical Properties of Fluids</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pm" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">09</span><span class="cn">Oscillations</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr class="sr" onclick="ts(this)" data-section="pe"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-bolt"></i> Electricity <span class="st">10–11 Marks</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="pe"></span></span><span class="sec-prog-txt" data-sectxt="pe">0%</span></span></td></tr>
+<tr data-sec="pe" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">10</span><span class="cn">Electric Charges and Fields</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pe" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">11</span><span class="cn">Electrostatic Potential &amp; Capacitance</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pe" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">12</span><span class="cn">Current Electricity</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pe" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">13</span><span class="cn">Magnetic Effects of Current</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pe" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">14</span><span class="cn">Magnetism and Matter</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pe" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">15</span><span class="cn">Electromagnetic Induction</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pe" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">16</span><span class="cn">Alternating Current</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="pe" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">17</span><span class="cn">Electromagnetic Waves</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr class="sr" onclick="ts(this)" data-section="po"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-eye"></i> Optics &amp; Modern Physics <span class="st">10 Marks</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="po"></span></span><span class="sec-prog-txt" data-sectxt="po">0%</span></span></td></tr>
+<tr data-sec="po" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">18</span><span class="cn">Ray Optics &amp; Optical Instruments</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="po" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">19</span><span class="cn">Wave Optics</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="po" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">20</span><span class="cn">Dual Nature of Radiation &amp; Matter</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="po" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">21</span><span class="cn">Atoms</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="po" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">22</span><span class="cn">Nuclei</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="po" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">23</span><span class="cn">Semiconductors</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="po" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">24</span><span class="cn">Communication Systems</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr class="sr" onclick="ts(this)" data-section="ph2"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-temperature-half"></i> Heat &amp; Thermodynamics <span class="st">4 Marks</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="ph2"></span></span><span class="sec-prog-txt" data-sectxt="ph2">0%</span></span></td></tr>
+<tr data-sec="ph2" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">25</span><span class="cn">Thermal Properties of Matter</span><span class="wt">2 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ph2" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">26</span><span class="cn">Thermodynamics</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr data-sec="ph2" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">27</span><span class="cn">Kinetic Theory of Gases</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+<tr class="sr" onclick="ts(this)" data-section="pw2"><td colspan="7"><span class="sl"><i class="fa-solid fa-chevron-down scv"></i><i class="fa-solid fa-wave-square"></i> Waves &amp; Sound <span class="st">1 Mark</span></span><span class="sec-prog"><span class="sec-prog-bar"><span class="sec-prog-fill" data-secprog="pw2"></span></span><span class="sec-prog-txt" data-sectxt="pw2">0%</span></span></td></tr>
+<tr data-sec="pw2" class="reveal-row"><td><div class="ci"><span class="chk" onclick="chk(this)"></span><span class="rn">28</span><span class="cn">Waves</span><span class="wt">1 Q</span></div></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td><td><span class="ph">[Add Link]</span></td></tr>
+</tbody></table></div>
+<div class="cf"><span>28 chapters · 5 sections · ~40 marks</span><div class="gd"><span></span><span></span><span></span><span></span><span></span></div></div>
+</div></article>
+
+<footer class="pf"><div class="fr"></div><span>AR SIR · EAPCET 2026</span></footer>
+</div>
+<script>
+// PARTICLES
+(function(){const c=document.getElementById('particles');for(let i=0;i<35;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDuration=(8+Math.random()*12)+'s';p.style.animationDelay=Math.random()*10+'s';p.style.width=p.style.height=(1+Math.random()*2)+'px';c.appendChild(p)}})();
+
+// COUNTDOWN to EAPCET 2026 (approx May 2026)
+const eapcetDate=new Date('2026-05-09T09:00:00+05:30');
+function updateCD(){const n=new Date(),d=eapcetDate-n;if(d<=0)return;const days=Math.floor(d/864e5),hrs=Math.floor(d%864e5/36e5),mins=Math.floor(d%36e5/6e4),secs=Math.floor(d%6e4/1e3);document.getElementById('cdD').textContent=String(days).padStart(2,'0');document.getElementById('cdH').textContent=String(hrs).padStart(2,'0');document.getElementById('cdM').textContent=String(mins).padStart(2,'0');document.getElementById('cdS').textContent=String(secs).padStart(2,'0')}
+function updateClock(){const n=new Date();document.getElementById('liveClock').textContent=n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true})}
+setInterval(updateCD,1000);setInterval(updateClock,1000);updateCD();updateClock();
+
+// THEME
+function tt(){const h=document.documentElement,i=document.getElementById('ti');if(h.dataset.theme==='dark'){h.dataset.theme='light';i.className='fa-solid fa-moon'}else{h.dataset.theme='dark';i.className='fa-solid fa-sun'}}
+
+// MUSIC
+let musicPlaying=false;
+function toggleMusic(){const a=document.getElementById('bgm'),b=document.getElementById('musicBtn'),ic=document.getElementById('musicIcon');if(musicPlaying){a.pause();b.classList.remove('music-playing');ic.className='fa-solid fa-music'}else{a.volume=0.3;a.play().catch(()=>{});b.classList.add('music-playing');ic.className='fa-solid fa-pause'}musicPlaying=!musicPlaying}
+
+// CARD TOGGLE
+function tc(h){h.nextElementSibling.nextElementSibling.classList.toggle('collapsed');h.classList.toggle('collapsed')}
+
+// SECTION TOGGLE
+function ts(s){const id=s.dataset.section,rows=document.querySelectorAll('tr[data-sec="'+id+'"]'),c=s.classList.toggle('scc');rows.forEach(r=>{if(c)r.classList.add('sh');else r.classList.remove('sh')})}
+
+// EXPAND/COLLAPSE ALL
+let ae=true;
+function ta(){const b=document.getElementById('eb'),srs=document.querySelectorAll('.sr');if(ae){srs.forEach(s=>{if(!s.classList.contains('scc'))ts(s)});document.querySelectorAll('.ch').forEach(h=>{if(!h.classList.contains('collapsed'))tc(h)});b.innerHTML='<i class="fa-solid fa-expand"></i> Expand'}else{document.querySelectorAll('.ch.collapsed').forEach(h=>tc(h));srs.forEach(s=>{if(s.classList.contains('scc'))ts(s)});b.innerHTML='<i class="fa-solid fa-compress"></i> Collapse'}ae=!ae}
+
+// CHECKBOX + PROGRESS
+function chk(el){el.classList.toggle('checked');const row=el.closest('tr');row.classList.toggle('done-row');saveState();updateProgress()}
+
+function updateProgress(){['math','chem','phys'].forEach(sub=>{const card=document.querySelector('[data-subject="'+sub+'"]');if(!card)return;const total=parseInt(card.dataset.total);const done=card.querySelectorAll('.chk.checked').length;const pct=Math.round(done/total*100);
+document.getElementById('pct-'+sub).textContent=pct+'%';document.getElementById('done-'+sub).textContent=done;
+document.getElementById('ring-'+sub).style.strokeDashoffset=100-pct;
+document.getElementById('prog-'+sub).style.width=pct+'%';
+});
+// Section progress
+document.querySelectorAll('.sr').forEach(sr=>{const sid=sr.dataset.section;const rows=document.querySelectorAll('tr[data-sec="'+sid+'"]');const total=rows.length;let done=0;rows.forEach(r=>{if(r.querySelector('.chk.checked'))done++});const pct=total?Math.round(done/total*100):0;const fill=document.querySelector('[data-secprog="'+sid+'"]');const txt=document.querySelector('[data-sectxt="'+sid+'"]');if(fill)fill.style.width=pct+'%';if(txt)txt.textContent=pct+'%'});
+}
+
+// SAVE/LOAD STATE
+function saveState(){const state={};document.querySelectorAll('.chk.checked').forEach(c=>{const row=c.closest('tr');const cn=row.querySelector('.cn');if(cn)state[cn.textContent]=true});try{localStorage.setItem('arsir_eapcet_state',JSON.stringify(state))}catch(e){}}
+
+function loadState(){try{const s=localStorage.getItem('arsir_eapcet_state');if(!s)return;const state=JSON.parse(s);document.querySelectorAll('.cn').forEach(cn=>{if(state[cn.textContent]){const row=cn.closest('tr');const chk=row.querySelector('.chk');if(chk){chk.classList.add('checked');row.classList.add('done-row')}}})}catch(e){}updateProgress()}
+
+// SEARCH
+function fc(q){q=q.toLowerCase().trim();const ar=document.querySelectorAll('tr[data-sec]'),sr=document.querySelectorAll('.sr'),sc=document.querySelectorAll('.sc'),nr=document.getElementById('nr');if(!q){ar.forEach(r=>{r.classList.remove('snm','sm');r.style.display=''});sr.forEach(r=>r.style.display='');sc.forEach(c=>c.style.display='');nr.style.display='none';return}let t=0;const sm={};ar.forEach(r=>{const cn=r.querySelector('.cn');if(cn&&cn.textContent.toLowerCase().includes(q)){r.classList.add('sm');r.classList.remove('snm','sh');r.style.display='';sm[r.getAttribute('data-sec')]=true;t++}else{r.classList.add('snm');r.classList.remove('sm');r.style.display='none'}});sr.forEach(s=>{s.style.display=sm[s.dataset.section]?'':'none'});sc.forEach(c=>{const v=c.querySelector('tr.sm');c.style.display=v?'':'none';const b=c.querySelector('.cb');if(v&&b.classList.contains('collapsed')){b.classList.remove('collapsed');c.querySelector('.ch').classList.remove('collapsed')}});nr.style.display=t===0?'block':'none'}
+
+// KEYBOARD SHORTCUTS
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();document.getElementById('si').focus()}if(e.key==='Escape'){document.getElementById('si').value='';fc('');document.getElementById('si').blur()}});
+
+// SCROLL REVEAL
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}})},{threshold:0.1,rootMargin:'0px 0px -30px 0px'});
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.reveal-row').forEach(r=>observer.observe(r));loadState()});
+</script>
+</body>
+</html>
